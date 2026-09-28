@@ -1,0 +1,6 @@
+{x::Type | x == int };;
+
+{x::Type | x == int };;
+
+
+kind (fun T::Rec -> { T :: Rec | ~ empty(s) });;

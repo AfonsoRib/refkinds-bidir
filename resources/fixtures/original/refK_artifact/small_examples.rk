@@ -1,0 +1,279 @@
+type (fun y:bool -> y);;
+
+type (fun y:int -> y) 2;;
+
+type (fun y:top -> y) 2;;
+
+type (fun z:int -> ((fun y:int -> y) z)) 3;;
+
+type fun k:int -> (fun z:int -> ((fun y:int -> y) z)) 3;;
+
+type fun k:int -> ((fun z:int -> ((fun y:int -> y) z)) 3);;
+
+kind (fun T::Type -> T);;
+
+kind (fun X::Rec -> (X->X));;
+
+kind (fun X::Type -> (X->X)) int;;
+
+type (fun T::Type -> fun x:T -> x);;
+
+type (fun T::Type -> fun x:T -> x) : All T::Type . (T -> T);;
+
+type (fun T::Type -> fun x:T -> x) int;;
+
+type (fun T::Type -> fun x:T -> x) (int->(ref int));;
+
+kind int->int;;
+
+kind (fun T::Type -> T) (int->int) ;;
+
+kind (fun T::Fun -> T) (int->int) ;;
+
+type (fun T::Type -> (fun x:T -> x));;
+
+type (fun T::Type -> (fun x:T -> x)) int;; 
+
+type (fun T::Type -> (fun x:T -> x)) int 3;;
+
+type fun y:(fun x::Type -> x  bool) -> y;;
+
+kind All X::Rec.(X -> int);;
+
+ok Gen Rec;;
+
+kind All F::(Pi X::Type.Rec).(F int);;
+
+kind All F::(Pi X::Type.Rec).(F int) :: Gen (Pi X :: Type.Rec);;
+
+kind int;;
+
+kind int -> bool;;
+
+kind `p;;
+
+ok Type;;
+
+ok Rec;;
+
+ok Lab;;
+
+ok Ref;;
+
+ok Gen Type;; 
+
+ok Pi x::Rec.Type;;
+
+kind (fun l::Lab -> l);;  
+
+kind (fun l::Lab -> l) `p;;
+
+type [];;
+
+kind [||];;
+
+kind [|`p:int|];;
+
+kind [|`p:int->int|];;
+
+kind [|`p:int, `g:bool|];;   
+
+kind [|`p:int|]@[|`f:int->int|];;                                        
+
+type [`p = 2];; 
+
+type [`p=2]@[`q=2];;
+
+type [`p=2]@[`x=2];;
+
+type [`p=2,`q=0]@[`z=false];;
+
+kind [|`p:int|]@[|`f:int->int,`g:int|];;                                        
+
+kind [|`p:int,`f:int->int|]@[|`g:int|];;                                        
+
+type [`p = 2, `g = true];; 
+
+type fun x1:bool -> fun x2:int -> [`a=x1,`b=x2];; 
+
+type (fun x1:int -> fun x2:int -> [`a=x1,`b=x2]) 2;;
+
+type (fun x1:int -> fun x2:int -> [`a=x1,`b=x2]) 2 3;;
+
+type (fun x1:int -> fun l::Lab -> [l=x1]) 22 `foo;; 
+
+type (fun x1:int -> fun l::Lab -> [(fun x::Lab -> x)l=x1]) 99 `bob;;
+
+type (fun T::Type -> (fun x1:T -> fun l::Lab -> [((fun x::Lab -> x)l)=x1])) int 99 `bob;;
+
+type fun X::Type -> [`inc = fun x:X -> x, `dec = fun x:X -> x];;
+
+type fun X::Type -> [`inc = fun x:X -> x, `dec = [ `zip = fun x:X -> x]];;
+
+type fun x: [|`p:int, `g:bool|] -> x;;
+
+kind head ( [|`p : int|] );;
+
+kind head ( [|`p : int->int|] );;
+
+type head ( [`p = 2] );;
+
+type head([`f=fun x:int -> x]);;
+
+type fun x: [|`p:int, `g:bool|] -> head(x);;
+
+type fun X::Type -> fun x: [|`p:X, `g:bool|] -> head(x);;
+
+type fun X::Type -> fun x: [|`p:bool, `g:X|] -> head(x);;
+
+kind (fun X::Rec -> X) [|`p:int, `g:bool|];;
+
+kind (fun X::Rec -> X) [|`p:int, `g:bool|] :: Rec ;;
+
+kind All X::{ s :: Rec |  ~ empty(s) } . (X -> head(X));;
+
+type (fun X::{ s :: Rec | ~ empty(s) } -> fun x:X -> head(x));; 
+
+type (fun X::{ s :: Rec | ~ empty(s) } -> 2) [|`p:int|];; 
+
+type (fun X::{ s :: Rec | ~ empty(s) } -> fun x:X -> head(x)) [|`p:int|];; 
+
+kind (fun X::{ s :: Rec | ~ empty(s) } -> head(X));; 
+
+kind (fun X::{ s :: Rec | ~ empty(s) } -> head(X)) [|`p:int, `g:bool|];; 
+
+kind tail ( [|`p : int|] );;
+
+type tail ( [`p = 2] );;
+
+type tail ( [`p = 2, `g = true] );;
+
+kind headlb ( [`p = 2, `g = true] );;
+
+kind headlb ( tail ([`p = 2, `g = true] ) );;
+
+kind headlb [|`p:int, `g:bool|];;
+
+type  [`p = 2, `g = fun X::Rec -> fun x:X -> x];;
+
+kind All X::{ s :: Rec | ~ empty(s) }  . (X -> tail(X));;
+
+type tail ( [`p = 2, `g = fun X::Rec -> fun x:X -> x] );;
+
+type head ( tail ( [`p = 2, `g = true] ));;
+
+type fun X::Type -> fun Y::Rec -> fun x: [|`p:X, `g:Y|] -> tail(x);;
+
+type fun X::Type -> fun Y::Rec -> fun x: [|`p:X, `g:Y|] -> tail(x) int [|`p:int, `g:bool|];;
+
+fun X::Type -> fun Y::Rec -> fun x: [|`p:X, `g:Y|] -> tail(x) int [|`p:int, `g:bool|];;
+
+kind tail ( [| `p : int, `g : bool |] );;
+
+type (fun r:[|`p:int, `g:bool|] -> [`a = 2]@r);;
+
+kind (fun F::Fun -> [| `d : dom F,`c : cod F |]);;
+
+kind (fun F::Fun -> [| `d : dom F,`c : cod F |]) (int->bool);;
+
+kind (fun F::Fun -> [| `d : dom F,`c : cod F |]) (int->bool);;
+
+type (fun R::Rec -> empty R);;
+
+type (fun R::Rec -> empty R) : All R::Rec . bool;;
+
+type (fun R::Rec -> fun x:R -> empty R) : All R::Rec . (R -> bool) ;;
+
+kind (fun R::Rec -> R) :: Pi R :: Rec.Rec;;
+
+kind (fun R::Rec -> (R->R)) :: Pi R :: Rec.Fun;;
+
+type (fun R::Rec -> if empty R then 1 else 2);;
+
+type (fun R::Rec -> fun r:R -> if empty R then false else true);;
+
+kind if true then (int->int) else (int->int);;
+
+kind (fun y::Rec -> if empty y then (bool->y) else (int->y));;
+
+kind (fun y::Rec -> if empty y then (y->int) else (int->y));;
+
+type if true then 1 else true : if true then int else bool;;
+
+type 2 : if false then bool else int;;
+
+kind All R::Rec. (R -> if empty R then int else bool);;
+
+type (fun R::Rec -> fun r:R -> if empty R then 1 else true) : All R::Rec. (R -> if empty R then int else bool);;
+
+kind (fun R::Rec -> if empty R then `K else headlb(R)) :: Pi R::Rec. Lab;;
+
+kind (fun R::Rec -> if empty R then `K else `p) :: Pi R::Rec. Lab;;
+
+kind (fun R::{z::Rec | ~ empty(z) } -> headlb(R)) :: Pi R::{z::Rec | ~ empty(z) }. Type;;
+
+kind headlb ( [|`p : int|] );; 
+
+kind headlb ( [`p = 2] );;
+
+kind dom ( (fun y::Type -> (y -> int)) bool ) ;;
+
+kind cod ( (fun y::Type -> (y -> int)) bool ) ;;
+
+kind refof ref int;;
+
+kind (fun r::{z::Rec | ~ empty(z) } -> ref head ( r )) [|`p : int|];;
+
+kind fun x::{z::Rec | ~(z == [||])  } -> head(x) ;;
+
+kind fun x::{z::Rec | ~ empty(z) } -> head(x) ;;
+
+kind fun u::Rec -> u ;;
+
+kind fun u::Rec -> int ;;
+
+ok (Pi u::Rec. Rec);;
+
+kind (fun f::(Pi u::Rec. Rec) -> int);;
+
+kind (fun y::Lab -> y);;
+
+kind (fun y::Rec -> [|`p : int|]);;
+
+kind (fun y::Rec -> [|`p : int|]) [||];;
+
+kind (fun y::{x::Rec | empty(x) } -> [|`p : int|]@y) :: Pi y::{x::Rec | empty(x) }. {x::Rec | ~ empty(x) };;
+
+kind 
+let F:: Pi y::{x::Rec | empty(x) }. {x::Rec | ~ empty(x) } = (fun y::{x::Rec | empty(x) } -> [|`p : int|]@y) 
+in head (F [||]) 
+end;;
+
+kind (fun f::(Pi u::Rec. Rec) -> [|`p : int|]);;
+
+kind (fun f::(Pi u::Rec.Rec) -> fun x::Rec ->[|`p : int|]) ;;
+
+kind (fun f::(Pi u::Rec.Rec) -> fun x::Rec -> int) ;;
+
+kind (fun f::(Pi u::Rec.{ z::Rec | ~ empty(z) }) -> fun x::Rec -> head(f x)) ;;
+
+kind (fun y::Rec -> [|`p : int|]);;
+
+kind (fun f::(Pi u::Rec.{z::Rec | ~ empty(z) }) -> fun x::Rec -> head( f x) ) (fun y::Rec -> [|`p : int|]);;
+
+kind (fun f::(Pi x::Rec.Rec) -> fun y::Rec -> [|`p : int|]);;
+
+kind (fun g::(Pi x::{x::Rec | empty(x) }.Rec) -> fun X::Type -> (g [| |]));;
+
+kind (fun g::(Pi x::{z::Rec | ~ empty(z) }.Rec) -> fun X::Type -> (g [|`q : bool |]));;
+
+kind (fun g::(Pi x::{z::Rec | ~ (`q inl labSet(z)) }.Rec) -> fun X::Type -> 
+   (g [|`p : X|])) (fun y::{s::Rec | ~ (`q inl labSet(s)) } ->  [|`q : bool|]@y);;
+
+type fun RA::Rec -> fun RB::{z::Rec |labSet(z) # labSet(RA)} -> 2;;
+
+kind fun RA::Rec -> fun RB::{z::Rec |labSet(z) # labSet(RA)} -> RB;;
+
+type "end of file simple tests -- all tests";;
+
+quit;;

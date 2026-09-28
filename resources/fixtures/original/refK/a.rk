@@ -1,0 +1,7 @@
+Typecheck (fun y:bool => y);;
+Typecheck (fun z:bool => ((fun y:bool => y) z));;
+Typecheck (fun z:bool => ((fun y:bool => y) y));;
+//Typecheck (tfun T::Type => T);;
+Kindcheck (tfun T::Type => T);;
+
+Kindcheck (fun T::Type => T);;

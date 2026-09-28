@@ -1,0 +1,1 @@
+(letrec loop : TInt -> TInt = fun x -> loop x in loop 0) : TInt

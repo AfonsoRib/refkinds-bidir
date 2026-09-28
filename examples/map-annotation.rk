@@ -1,0 +1,16 @@
+(
+  let row : (
+    let ToBool :: Pi field :: KType. KType = fun field -> TBool in
+    letrec Map ::
+      Pi row :: KRec.
+      Pi transform :: (Pi field :: KType. KType).
+      { mapped :: KRec | labels mapped == labels row } =
+      fun row -> fun transform ->
+        if not empty row then
+          [| headLabel row : transform (head row) |]
+            @ Map (tail row) transform
+        else [||]
+    in Map [| `first : TInt, `second : TString, `third : TUnit |] ToBool
+  ) = [first = True, second = False, third = True] in
+  head (tail row)
+) : TBool

@@ -1,0 +1,103 @@
+cabal-version:      3.0
+name:               refinement-kinds-bidir
+version:            0.1.0.0
+synopsis:           Bidirectional checker for Refinement Kinds
+description:        Clean-room implementation of Refinement Kinds with bidirectional kind constraints and validated term checking.
+license:            BSD-3-Clause
+author:             Afonso
+build-type:         Simple
+extra-source-files: examples/*.rk
+                  , resources/fixtures/original/refK_artifact/*.rk
+
+common warnings
+    ghc-options: -Wall -Wno-name-shadowing -Wno-unused-matches
+
+library
+    import:           warnings
+    other-modules:    EvalTy
+                    , WhnfEquality
+    exposed-modules:  Types
+                    , Substitution
+                    , Constraint
+                    , Context
+                    , Prims
+                    , ANF
+                    , Desugar
+                    , Check
+                    , Lexer
+                    , Parser
+    build-depends:    base >= 4.16 && < 5
+                    , containers
+                    , text
+                    , mtl
+                    , transformers
+                    , process
+                    , filepath
+                    , directory
+                    , array
+                    , aeson
+    build-tool-depends: alex:alex, happy:happy
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+executable refk
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base >= 4.16 && < 5
+                    , refinement-kinds-bidir
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
+test-suite refk-test
+    import:           warnings
+    default-language: Haskell2010
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Spec.hs
+    ghc-options:      -threaded -rtsopts
+    other-modules:    Support.Expected
+                    , Support.Errors
+                    , Suites.ContextSpec
+                    , Suites.PredicateSyntaxSpec
+                    , Suites.CheckerRefactorSpec
+                    , Suites.CheckerOnlySpec
+                    , Suites.NameAnalysisSpec
+                    , Suites.ConstraintSpec
+                    , Suites.PaperEqualitySpec
+                    , Suites.EmbeddedTypeSpec
+                    , Suites.GeneralizedKindSpec
+                    , Suites.UninterpretedSpec
+                    , Suites.EqualityBoundarySpec
+                    , Suites.StrictSpecificationSpec
+                    , Suites.Common
+                    , Support.Universal
+                    , Support.AstInvariants
+                    , Suites.ANFSpec
+                    , Suites.KernelBoundarySpec
+                    , Suites.LocallyNamelessSpec
+                    , Suites.SemanticEqualitySpec
+                    , Suites.WhnfEqualitySpec
+                    , Suites.SubkindingSpec
+                    , Suites.CheckStructureSpec
+                    , Suites.TypeCheckerSpec
+                    , Suites.TermCheckerSpec
+                    , Suites.TermValidationSpec
+                    , Suites.TermRefinementSearch
+                    , Suites.ParserSpec
+                    , Suites.ParsedSyntaxSpec
+                    , Suites.PaperExamplesSpec
+                    , Suites.BehaviorCatalogueSpec
+                    , Suites.TypeConstructsSpec
+                    , Suites.SurfaceLoweringSpec
+                    , Suites.RecordConstraintSpec
+                    , Suites.RecursiveMapSpec
+                    , Suites.CliSpec
+    build-depends:    base >= 4.16 && < 5
+                    , refinement-kinds-bidir
+                    , tasty >= 1.5.4
+                    , tasty-hunit
+                    , text
+                    , filepath
+                    , directory
+                    , process
+    build-tool-depends: refinement-kinds-bidir:refk

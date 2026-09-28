@@ -1,0 +1,12 @@
+dist-newstyle/
+.cabal-sandbox/
+cabal.project.local
+*.hi
+*.o
+*.smt2
+scratch/
+*.aux
+*.log
+*.out
+*.toc
+

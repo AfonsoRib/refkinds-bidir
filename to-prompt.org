@@ -1,0 +1,11 @@
+* change "reject nondecreasing type recursion" to allow nondecreasing as part of a bug
+- make it become one of the features of the language
+* maybe add a top type that every kind is a subkind of including kpi.
+*  fix :
+- pairer and object-pair depend on an unresolved dropField/isObj contract mismatch.
+- dropField dependency failures:
+  - paper.drop.generic, .a, .b, .c, .missing.
+  - Their shared generic declarations produce an invalid closed VC because the recursive result lacks the required subset contract.
+* let's remove kind case rule and ask astra to generate a plan to implement the kind case rule. First for type level and then for term level.
+- note: there may be added complexity for gen k
+- let's make sure to plan what constraints it will output.

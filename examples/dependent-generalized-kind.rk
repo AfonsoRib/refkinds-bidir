@@ -1,0 +1,8 @@
+(
+  let getFirst : ((let Getter :: KGen R :: { r :: KRec | not (empty r) }.
+    { f :: KFun | dom f == R && img f == head R } =
+    forall R :: {r :: KRec | not (empty r)}.
+      ((R -> head R) :: { f :: KFun | dom f == R && img f == head R })
+  in Getter) :: KGen R :: {r :: KRec | not (empty r)}. KFun) = tfun R -> fun record -> head record in
+  getFirst [[| `first : TInt |]] [first = 7]
+) : TInt

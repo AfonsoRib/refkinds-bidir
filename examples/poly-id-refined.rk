@@ -1,0 +1,8 @@
+(((tfun a -> fun x -> x) :
+    (let newBuiltForall =
+      ((forall a :: { a :: KType | a == TBool || a == TInt }. a -> a) ::
+        KGen a :: { a :: KType | a == TBool || a == TInt }.
+          { v :: KFun |
+              v == (a -> a) && (img v == TBool || img v == TInt) })
+     in newBuiltForall))
+  [TInt]) 42

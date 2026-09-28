@@ -1,0 +1,209 @@
+/* ================================================================
+   EVAL TESTS: Map over records with any size
+   ================================================================
+   These tests verify that Map (a type-level function that maps a
+   type constructor G over each field of a record type R) works
+   correctly at the evaluation level for records of various sizes.
+   ================================================================ */
+
+
+
+/* ------------------------------------------------------------------
+   Test 1: Map Identity over a 1-field record
+   Map [|`p:int|] Id  ===  [|`p:int|]
+   Then create a value of that type and access it.
+   ------------------------------------------------------------------ */
+eval let Id::(Pi X::Type.Type) = fun X::Type -> X in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`p:int|] Id) = [`p = 42] in
+head(r)
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 2: Map Identity over a 2-field record
+   Map [|`p:int, `q:bool|] Id  ===  [|`p:int, `q:bool|]
+   ------------------------------------------------------------------ */
+eval let Id::(Pi X::Type.Type) = fun X::Type -> X in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`p:int, `q:bool|] Id) = [`p = 7, `q = true] in
+(head(r), head(tail(r)))
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 3: Map Identity over a 3-field record
+   Map [|`a:string, `b:int, `c:bool|] Id  ===  [|`a:string, `b:int, `c:bool|]
+   ------------------------------------------------------------------ */
+eval let Id::(Pi X::Type.Type) = fun X::Type -> X in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`x:int, `y:string, `z:bool|] Id) = [`x = 1, `y = "hello", `z = false] in
+head(tail(r))
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 4: Map Identity over a 4-field record
+   ------------------------------------------------------------------ */
+eval let Id::(Pi X::Type.Type) = fun X::Type -> X in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`a:int, `b:int, `c:int, `d:int|] Id) = [`a = 10, `b = 20, `c = 30, `d = 40] in
+(head(tail(tail(r))))
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 5: Map 'bool' over a 1-field record
+   Map [|`p:int|] (fun X::Type -> bool)  ===  [|`p:bool|]
+   ------------------------------------------------------------------ */
+eval let ToBool::(Pi X::Type.Type) = fun X::Type -> bool in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`p:int|] ToBool) = [`p = true] in
+head(r)
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 6: Map 'bool' over a 2-field record
+   Map [|`p:int, `q:string|] (fun X::Type -> bool)  ===  [|`p:bool, `q:bool|]
+   ------------------------------------------------------------------ */
+eval let ToBool::(Pi X::Type.Type) = fun X::Type -> bool in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`p:int, `q:string|] ToBool) = [`p = false, `q = true] in
+(head(r), head(tail(r)))
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 7: Map 'int -> X' (a non-trivial type constructor) over 1-field
+   Map [|`p:bool|] (fun X::Type -> int->X)  ===  [|`p:int->bool|]
+   Then apply the resulting function.
+   ------------------------------------------------------------------ */
+eval let ToArrowInt::(Pi X::Type.Type) = fun X::Type -> (int -> X) in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`p:bool|] ToArrowInt) = [`p = (fun x:int -> true)] in
+(head(r) 42)
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 8: Map 'X -> X' (polymorphic identity function type) over 2-field record
+   Map [|`p:int, `q:bool|] (fun X::Type -> X->X)  ===  [|`p:int->int, `q:bool->bool|]
+   ------------------------------------------------------------------ */
+eval let SelfArrow::(Pi X::Type.Type) = fun X::Type -> (X -> X) in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`p:int, `q:bool|] SelfArrow) = [`p = (fun x:int -> x+1), `q = (fun x:bool -> ~x)] in
+((head(r) 5), (head(tail(r)) true))
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 9: Map over an empty record
+   Map [||] G  ===  [||]
+   ------------------------------------------------------------------ */
+eval let Id::(Pi X::Type.Type) = fun X::Type -> X in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [||] Id) = [] in
+empty r
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 10: 3-field record all same type
+   ------------------------------------------------------------------ */
+eval let Id::(Pi X::Type.Type) = fun X::Type -> X in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`f1:int, `f2:int, `f3:int|] Id) = [`f1 = 100, `f2 = 200, `f3 = 300] in
+(head(r), head(tail(r)), head(tail(tail(r))))
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 11: Map with label-preserving transformation on record of mixed types
+   Map [|`a:int, `b:string, `c:bool|] ToString where
+   ToString X = string for all X
+   ------------------------------------------------------------------ */
+eval let ToString::(Pi X::Type.Type) = fun X::Type -> string in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`a:int, `b:string, `c:bool|] ToString) = [`a = "aye", `b = "bee", `c = "see"] in
+(head(tail(tail(r))))
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 12: Named mapped type, 3-field access
+   ------------------------------------------------------------------ */
+eval let Id::(Pi X::Type.Type) = fun X::Type -> X in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let MT = (Map [|`x:int, `y:bool, `z:string|] Id) in
+let r : MT = [`x = 99, `y = true, `z = "map"] in
+(head(r), head(tail(r)), head(tail(tail(r))))
+end
+end
+end;;
+
+/* ------------------------------------------------------------------
+   Test 13: Nested records - Map over a record whose fields are themselves records
+   Map [|`p:[|`a:int|], `q:[|`b:bool|]|] Id
+   ------------------------------------------------------------------ */
+eval let Id::(Pi X::Type.Type) = fun X::Type -> X in
+letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+  fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+    if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+in
+let r : (Map [|`p:[|`a:int|], `q:[|`b:bool|]|] Id) = [`p = [`a = 5], `q = [`b = false]] in
+(head(head(r)), head(head(tail(r))))
+end
+end
+end;;
+
+"end of file map eval tests -- all tests";;
+
+quit;;

@@ -1,0 +1,5 @@
+(
+  let identity : (forall A :: KType. A -> A) =
+    tfun A -> fun x -> x
+  in identity [TInt] 3
+) : TInt

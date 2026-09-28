@@ -1,0 +1,88 @@
+type (fun x:ref int -> (x := !x));;
+
+type (fun k::{x::Fun | (dom(x) == bool) && (cod(x) == int)} -> (fun f:k -> (f true)));;
+
+type (fun k::{x::Fun | (dom(x) == bool) && (cod(x) == int)} -> (fun f:k -> (2*(f true))));;
+
+type (fun x:ref int -> (x := !x)) (new 2);;
+
+kind [| |] :: {x::Rec | empty(x) };;
+
+kind [|`p:int |] :: {x::Rec | ~ empty(x) };;
+
+kind [|`p:int |] :: {x::Rec | head(x) == int};;
+
+kind [|`p:int |] :: {x::Rec | ~ (head(x) == bool) };;
+
+kind [|`p:int |] :: {x::Rec | headlb(x) == `p};;
+
+kind (bool -> bool) -> bool :: { x::Fun | dom(x) == (bool -> bool) };;
+
+kind [|`p:int, `q:int->int|] :: {x::Rec | dom(head(tail(x))) == int };;
+
+kind [|`p:int, `q:int->int|] :: {x::Rec | dom(head(tail(x))) == cod(head(tail(x))) };;
+
+kind [|`p:int, `q:int->int|] :: {x::Rec | dom(head(tail(x))) == cod(head(tail(x))) };;
+
+kind int :: {x::Type | x == int };;
+
+kind fun X::Type -> (X -> X);;
+
+kind fun X::Type -> (X -> X) :: Pi X :: Type. Fun;;
+
+kind fun X::Type -> ref X :: Pi X :: Type. {x::Ref | true };;
+
+kind fun X::Type -> (X -> X) :: Pi X :: Type. {x::Fun | dom(x) == cod(x) };; 
+
+kind fun X::Type -> ( [|`p:X |] ->  [|`p:X |]) :: Pi X :: Type. {x::Fun | dom(x) == cod(x) };;
+
+kind [|`p:int|] :: {x::Type | ((fun l::Lab -> l)`p) inl labSet(x) };;
+
+kind [|`p:int|] :: {x::Type | ((fun l::Lab -> l)`p) inl labSet(x) };;
+
+ok {x::Rec | (`r inl labSet(x)) };; 
+
+kind All X::Type.X :: { t::Type | t == (All X::Type.X) };;
+
+kind All X::Type.X :: { t::Type | t == (All Y::Type.Y) };;
+
+type  [`p = 2];;
+
+type  [`p = 2, `g = (fun X::Rec -> (fun x:X -> x))];;
+
+kind head([| `p : int |]);;
+
+kind tail([| `p : int |]);;
+
+
+/* addfieldrecordtype */
+
+kind (fun l::Lab -> fun T::Type -> fun R::{x::Rec | ~ (l inl labSet(x))} 
+  -> (T -> (R -> [|l:T|]@R)));;
+
+/* addfieldrecord */
+
+type (fun l::Lab -> fun T::Type -> fun R::{x::Rec | ~ (l inl labSet(x))} 
+  -> (fun x:T -> fun y:R -> [l=x]@y));;
+
+kind fun Done::Type -> Done;; 
+
+kind  
+letrec Id::(Pi X::Rec.{x::Rec | labSet(X) == labSet(x)}) = fun X::Rec-> X in Id end;;
+
+type
+(fun X::{x::Type | x == int} -> fun y:X -> y ) int 2;;
+
+kind  
+let Id::(Pi X::Type.Type) = fun X::Type-> X in
+  Id int
+end;;
+
+type  
+let Id::(Pi X::Type.Type) = fun X::Type-> X in
+   let x : (Id int) = 3 in x end
+end;;
+
+type "end of file functions and records -- all tests";;
+
+quit;;

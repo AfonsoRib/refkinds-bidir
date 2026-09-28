@@ -1,0 +1,75 @@
+
+
+kind fun RA::{ s :: Rec |  ~ empty(s) } ->  [|headlb(RA)  :  head(RA)|] @ tail(RA) ;;
+
+kind fun RA::{ s :: Rec |  ~ empty(s) } -> fun RB::{z::Rec | (labSet(z) # labSet(RA)) &&  ~ empty(z) } 
+   ->  ([|headlb(RA)  :  bool|] @ tail(RA)) ;; 
+
+kind fun RA::{ s :: Rec |  ~ empty(s) } -> fun RB::{z::Rec | (labSet(z) # labSet(RA)) &&  ~ empty(z) } 
+   ->  [|headlb(RA)  :  bool|] @ [|headlb(RB)  :  bool|] ;;
+
+
+kind fun RA::{ s :: Rec |  ~ empty(s) } -> fun RB::{z::Rec | (labSet(z) # labSet(RA)) &&  ~ empty(z) && ~ (headlb(RA) inl labSet(z)) } 
+   ->  [|headlb(RA)  :  bool|] @ [|headlb(RB)  :  bool|] ;; 
+
+kind (fun RA::{ s :: Rec |  ~ empty(s) } -> (fun RB::{z::Rec | (labSet(z) # labSet(RA)) &&  ~ empty(z) } 
+   ->  [|headlb(RA)  :  bool|] @ [|headlb(RB)  :  bool|] )) [|`a : bool |];;
+
+kind (fun RA::{ s :: Rec |  ~ empty(s) } -> (fun RB::{z::Rec | (labSet(z) # labSet(RA)) &&  ~ empty(z) } 
+   ->  [|headlb(RA)  :  bool|] @ [|headlb(RB)  :  bool|] )) [|`a : bool |] [|`b : bool |];;
+
+
+kind (fun RA::{ s :: Rec |  ~ empty(s) } -> (fun RB::{z::Rec | (labSet(z) # labSet(RA)) &&  ~ empty(z) } 
+   ->  [|headlb(RA)  :  bool|] @ [|headlb(RB)  :  bool|] )) [|`a :
+   bool,`b : bool |] [|`c : bool , `d : bool  |];;
+
+/* FAILS ON PURPOSE */
+kind (fun RA::{ s :: Rec |  ~ empty(s) } -> (fun RB::{z::Rec | (labSet(z) # labSet(RA)) &&  ~ empty(z) } 
+   ->  [|headlb(RA)  :  bool|] @ [|headlb(RB)  :  bool|] )) [|`a :
+   bool,`b : bool |] [|`d : bool , `a : bool  |];;
+
+
+kind (fun RA::{ s :: Rec |  ~ empty(s) } -> (fun RB::{z::Rec | (labSet(z) # labSet(RA)) &&  ~ empty(z) } 
+   ->  [|headlb(RA)  :  bool|] @ [|headlb(RB)  :  bool|] )) ;;
+
+kind (fun RB::{ z :: Rec | ((labSet (z) # labSet ([|`a:bool|])) && ~empty(z)) } -> [|`a:bool, headlb(RB):bool|]) [|`c : bool, `d : bool |];;
+
+kind (fun y::{s::Rec | ~ (`r inl labSet(s)) } -> [|`r  :  bool|]@y) ;;
+
+kind  [||]:: { s :: Rec |  empty(s) };;
+
+kind  [|`r  :  bool|]:: { s :: Rec |  (`r inl labSet (s)) };;
+
+kind (fun y::{z::Rec | ~ (`r inl labSet(z)) } -> [|`r  :  bool|]@y) 
+:: Pi y :: { s :: Rec | ~(`r inl labSet (s)) }.{ s :: Rec | `r inl labSet (s) };;
+
+kind (fun y::{s::Rec | ~ (`r inl labSet(s)) } -> [|`r  :  bool|]@y) 
+:: Pi y :: { s :: Rec | ~(`r inl labSet (s)) }.{ s :: Rec | (head(s) == bool) && (headlb(s) == `r) };;
+
+kind (fun y::{x::Rec | ~ (`r inl labSet(x)) } -> ([|`r  :  bool|]@y))
+:: Pi x :: { s :: Rec | ~(`r inl labSet (s)) }.Rec;;
+
+kind (fun l::Lab -> fun T::Type -> fun R::Rec -> R);;
+
+kind fun R::{s::Rec | empty(s) } -> R;;
+
+kind fun R::Rec -> R;;
+
+kind [||] :: {s::Rec | ~ (`joe inl labSet(s)) };;
+
+kind (fun R::{s::Rec | ~ (`joe inl labSet(s)) } -> R);;
+
+kind (fun R::{s::Rec | ~ (`joe inl labSet(s)) } -> R) ([||]);;
+
+kind (fun l::Lab -> fun T::Type -> fun R::{s::Rec | ~ (l inl labSet(s)) } -> R);;
+
+kind (fun l::Lab -> fun T::Type -> fun R::{s::Rec | ~ (l inl labSet(s)) } ->  ([|l : T|]@R));;
+
+kind (fun l::Lab -> fun T::Type -> fun R::{s::Rec | ~ (l inl labSet(s)) } ->  ([|l : T|]@R)) `joe int [| |] ;;
+
+kind (((fun l::Lab -> fun T::Type -> fun R::{s::Rec | ~ (l inl
+labSet(s)) } ->  ([|l : T|]@R)) `joe) int) [| |] ;;
+
+type "end of file larger examples -- all tests";;
+
+quit;;

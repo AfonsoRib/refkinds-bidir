@@ -1,0 +1,6 @@
+packages: .
+tests: True
+benchmarks: False
+constraints: transformers-compat < 0.8
+package refinement-kinds-bidir
+  ghc-options: -O0

@@ -1,0 +1,287 @@
+kind 
+  letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+     fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+       if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map  (tail(R)) G)) else [||]
+in Map end;;
+
+kind 
+let Id::(Pi X::Type.Type) = fun X::Type-> (X->bool) in
+  letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+     fun R::Rec -> fun G::(Pi Y::Type.Type) -> 
+       if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map  (tail(R)) G)) else [||]
+in Map [|`p:bool,`q:int, `r:int|] Id end
+end;;
+
+kind 
+   let XForm::(Pi X::Type.Type) = fun X::Type -> [|`tag:string,`toString: (X -> int) |] in
+  
+    letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+     fun  R::Rec -> fun G::(Pi Y::Type.Type) -> 
+       if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||] in
+
+   let MkTableType :: Pi R::Rec.{r::Rec | labSet(r) == labSet(R)} = 
+     fun R :: Rec -> ( Map R XForm ) in
+
+    ( MkTableType [|`p:bool,`q:int|] )
+
+   end
+
+   end
+
+end;;
+
+type  
+letrec Id::(Pi X::Type.Type) = fun X::Type-> X in
+   let x : (Id int) = 3 in x end
+end;;
+
+kind
+letrec Proj :: Pi L :: Lab.Pi t :: { r :: Rec | L inl labSet(r) } . Type =
+  fun L::Lab -> fun t :: { r :: Rec | L inl labSet(r) } -> 
+    if (headlb(t) == L) then head(t) else (Proj L (tail(t)))
+in (Proj `a [|`b : int, `a:bool|]) 
+end;;
+
+kind 
+   let XForm::(Pi X::Type.Type) = fun X::Type -> [|`tag:string,`toString: (X -> int) |] in
+  
+    letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+     fun  R::Rec -> fun G::(Pi Y::Type.Type) -> 
+       if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||] in
+
+   let MkTableType :: Pi R::Rec.{r::Rec | labSet(r) == labSet(R)} = 
+     fun R :: Rec -> ( Map R XForm ) in
+
+    ( MkTableType [|`p:bool,`q:int|] )
+
+   end
+
+   end
+
+end;;
+
+
+
+kind fun RA::{ s :: Rec |  ~ empty(s) } -> fun RB::{z::Rec | (labSet(z) # labSet(RA))  } 
+   ->  ([|headlb(RA)  :  ref (head(RA))|] @ RB) ;; 
+
+kind
+letrec GType :: Pi S::{r::Rec | ~ (empty r) }.
+                Pi V::{v::Rec | labSet(v) # labSet(S) }. Fun
+       =
+       fun S::{r::Rec | ~ (empty r) } -> 
+       fun V::{v::Rec | labSet(v) # labSet(S) } -> 
+        ( (head(S)) -> (if ~ (empty (tail(S))) then (GType (tail(S)) ([|headlb S : ref (head(S)) |]@V)) else ([|headlb S : ref (head(S)) |]@V)))
+in
+ (GType [|`s : int, `q : bool, `f:bool->int |] [| |])
+end;;
+
+type
+letrec GType :: Pi S::{r::Rec | ~ (empty r) }.
+                Pi V::{v::Rec | labSet(v) # labSet(S) }. Fun
+       =
+       fun S::{r::Rec | ~ (empty r) } -> 
+       fun V::{v::Rec | labSet(v) # labSet(S) } -> 
+        ( (head(S)) -> if ~ (empty (tail(S))) then 
+                           (GType (tail(S)) ([|headlb S : ref (head(S)) |]@V)) 
+                         else ([|headlb S : ref (head(S)) |]@V))
+in
+letrec genConstr  : 
+     All S::{r::Rec | ~ (empty r) }.
+     All V::{v::Rec | labSet(v) # labSet(S) }.(V->(GType S V)) = 
+     fun S::{ r::Rec | ~ (empty r) } ->
+     fun V::{ v::Rec | labSet(v) # labSet(S) } -> 
+     fun v:V -> 
+     fun x:(head S) -> 
+       if ~ (empty (tail(S))) then
+                          (genConstr (tail(S)) ([| headlb S : ref (head(S))|]@V) ([(headlb S) = new x]@v)) 
+                      else ([(headlb S) = new x]@v)
+in
+   (genConstr  [|`s : int, `q : bool |] [| |])
+end
+end;;
+
+
+type 
+let Id::(Pi X::Type.Type) = fun X::Type -> (X->bool) in
+  letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+     fun  R::Rec -> fun G::(Pi Y::Type.Type) -> 
+       if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||]
+  in 
+   let r : (Map [|`p:bool|] Id) = [`p = fun x:bool -> ~ x ] in ( (head r) true ) end
+end
+end;;
+
+kind
+let Proj :: Pi L :: Lab.Pi t :: { r :: Rec | L inl labSet(r) } . Type =
+  fun L::Lab -> 
+  letrec G :: Pi t :: { r :: Rec | L inl labSet(r) } .Type = 
+    fun t :: { r :: Rec | L inl labSet(r) } -> 
+      if (headlb(t) == L) then head(t) else (G (tail(t)))
+  in G end
+in
+ Proj `p [|`p:bool|]
+end;;
+
+type
+let Proj :: Pi L :: Lab.Pi t :: { r :: Rec | L inl labSet(r) } . Type =
+  fun L::Lab -> 
+  letrec G :: Pi t :: { r :: Rec | L inl labSet(r) } .Type = 
+    fun t :: { r :: Rec | L inl labSet(r) } -> 
+      if (headlb(t) == L) then head(t) else (G (tail(t)))
+  in G end
+in letrec proj : All L::Lab. All t :: { r :: Rec | L inl labSet(r) }. (t -> (Proj L t)) =
+  fun  L::Lab -> fun t :: { r :: Rec | L inl labSet(r) } -> fun r:t ->
+    if (headlb(t) == L) then head(r) else (proj L (tail(t)) tail(r))
+  in
+   ( proj `a [|`b : int, `a:bool|] [`b=5, `a=false] )  
+end
+end;;
+
+
+type
+let Proj :: Pi L :: Lab.Pi t :: { r :: Rec | L inl labSet(r) } . Type =
+  fun L::Lab -> 
+  letrec G :: Pi t :: { r :: Rec | L inl labSet(r) } .Type = 
+    fun t :: { r :: Rec | L inl labSet(r) } -> 
+      if (headlb(t) == L) then head(t) else (G (tail(t)))
+  in G end
+in letrec proj : All L::Lab. All t :: { r :: Rec | L inl labSet(r) }. (t -> (Proj L t)) =
+  fun  L::Lab -> fun t :: { r :: Rec | L inl labSet(r) } -> fun r:t ->
+    if (headlb(t) == L) then head(r) else (proj L (tail(t)) tail(r))
+  in
+   let RT :: { r :: Rec | r == [|`b : int, `a:bool|] } = [|`b : int, `a:bool|]  in
+   let r0 : RT  = [`b=5, `a=false] in
+   let x : int =  ( proj `b RT r0 ) in x+x end end end
+  end
+end;;
+
+
+kind 
+   let XForm::(Pi X::Type.Type) = fun X::Type -> [|`tag:string,`toString: (X -> int) |] in
+  
+    letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+     fun  R::Rec -> fun G::(Pi Y::Type.Type) -> 
+       if ~ empty R then ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G)) else [||] in
+
+   let MkTableType :: Pi R::Rec.{r::Rec | labSet(r) == labSet(R)} = 
+     fun R :: Rec -> ( Map R XForm ) in
+
+    MkTableType [|`p:bool,`q:int|] 
+
+   end
+
+   end
+
+end;;
+
+
+
+type 
+
+  let Proj :: Pi L :: Lab.Pi t :: { r :: Rec | L inl labSet(r) } . Type =
+  fun L::Lab -> 
+  letrec G :: Pi t :: { r :: Rec | L inl labSet(r) } .Type = 
+    fun t :: { r :: Rec | L inl labSet(r) } -> 
+      if (headlb(t) == L) then head(t) else (G (tail(t)))
+  in G end
+  in
+
+  letrec proj : All L::Lab. All t :: { r :: Rec | L inl labSet(r) }. (t -> (Proj L t)) =
+  fun  L::Lab -> fun t :: { r :: Rec | L inl labSet(r) } -> fun r:t ->
+    if (headlb(t) == L) then head(r) else (proj L (tail(t)) tail(r))
+  in
+
+  let XForm::(Pi X::Type. { r :: Rec | r == [|`tag:string,`toString: (X -> string) |]  })  = 
+     fun X::Type -> [|`tag:string,`toString: (X -> string) |]  
+  in
+
+  letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+          fun  R::Rec -> fun G::(Pi Y::Type.Type) -> 
+           if ~ empty R then 
+              ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G))
+           else [||] 
+  in
+
+  let MkTableType :: Pi R::Rec.{r::Rec | labSet(r) == labSet(R)} = 
+               fun R :: Rec -> ( Map R XForm )
+  in
+
+  letrec MkTable : All R::Rec. ((MkTableType R) -> (R -> string)) = 
+             fun R :: Rec -> fun m:(MkTableType R) -> fun r:R -> 
+               (if ~ (empty R) then "<tr><th>" ^
+                  (proj `tag (XForm (head R)) (head m)) ^ 
+                  "<\th><td>" ^
+                 ( (proj `toString (XForm (head R)) (head m)) (head r)) ^ 
+                  "<\td><\tr>" ^
+                  (MkTable (tail(R)) (tail(m)) (tail(r)))
+                else ""
+               )
+            in
+              
+             MkTable 
+
+           end
+        end
+   end
+end
+end
+end;;
+
+type 
+
+  let Proj :: Pi L :: Lab.Pi t :: { r :: Rec | L inl labSet(r) } . Type =
+  fun L::Lab -> 
+  letrec G :: Pi t :: { r :: Rec | L inl labSet(r) } .Type = 
+    fun t :: { r :: Rec | L inl labSet(r) } -> 
+      if (headlb(t) == L) then head(t) else (G (tail(t)))
+  in G end
+  in
+
+  letrec proj : All L::Lab. All t :: { r :: Rec | L inl labSet(r) }. (t -> (Proj L t)) =
+  fun  L::Lab -> fun t :: { r :: Rec | L inl labSet(r) } -> fun r:t ->
+    if (headlb(t) == L) then head(r) else (proj L (tail(t)) tail(r))
+  in
+
+  let XForm::(Pi X::Type. { r :: Rec | r == [|`tag:string,`toString: (X -> string) |]  })  = 
+     fun X::Type -> [|`tag:string,`toString: (X -> string) |]  
+  in
+
+  letrec Map::Pi R::Rec.Pi G::(Pi Y::Type.Type).{r::Rec | labSet(r) == labSet(R)} =
+          fun  R::Rec -> fun G::(Pi Y::Type.Type) -> 
+           if ~ empty R then 
+              ([|headlb(R):(G (head(R)))|] @ (Map (tail(R)) G))
+           else [||] 
+  in
+
+  let MkTableType :: Pi R::Rec.{r::Rec | labSet(r) == labSet(R)} = 
+               fun R :: Rec -> ( Map R XForm )
+  in
+
+  letrec MkTable : All R::Rec. ((MkTableType R) -> (R -> string)) = 
+             fun R :: Rec -> fun m:(MkTableType R) -> fun r:R -> 
+               (if ~ (empty R) then "<tr><th>" ^
+                  (proj `tag (XForm (head R)) (head m)) ^ 
+                  "<\th><td>" ^
+                 ( (proj `toString (XForm (head R)) (head m)) (head r)) ^ 
+                  "<\td><\tr>" ^
+                  (MkTable (tail(R)) (tail(m)) (tail(r)))
+                else ""
+               )
+            in
+              
+             MkTable [|`name:string,`age: int |] 
+                     [`name = [`tag = "NAME",`toString = (fun x:string -> x)],`age = [`tag = "AGE",`toString = (fun x:int -> "20")]] 
+                     [`name = "joe",`age = 20]
+
+           end
+        end
+   end
+end
+end
+end;;
+
+
+type "end of file paper examples -- all tests";;
+
+quit;;
